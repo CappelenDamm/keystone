@@ -23,6 +23,7 @@ We've been working on a major update to KeystoneJS for the last year, and it's a
 * Startup time has been significantly reduced
 * LocalFile, S3File and AzureFile have been replaced by a new generic `keystone.Storage` engine and File field
 * We have much higher unit and end-to-end test coverage
+* Awesome
 
 Please try out the beta and let us know what you think:
 
