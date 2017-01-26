@@ -22,7 +22,7 @@ var Footer = React.createClass({
 	renderUser () {
 		const { User, user } = this.props;
 		if (!user) return null;
-
+		return null;
 		return (
 			<span>
 				<span> Signed in as </span>
