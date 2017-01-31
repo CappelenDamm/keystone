@@ -155,6 +155,9 @@ var EditForm = React.createClass({
 					loading: false,
 				});
 			}
+			if(this.props.onUpdate) {
+				this.props.onUpdate();
+			}
 		});
 	},
 	renderKeyOrId () {
@@ -257,7 +260,7 @@ var EditForm = React.createClass({
 		}, this);
 	},
 	renderFooterBar () {
-		if (this.props.list.noedit && this.props.list.nodelete) {
+		if (this.props.nofooter || (this.props.list.noedit && this.props.list.nodelete)) {
 			return null;
 		}
 
