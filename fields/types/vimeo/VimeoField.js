@@ -18,8 +18,7 @@ module.exports = Field.create({
 		type: 'Vimeo',
 	},
   upload() {
-		
-	 });
+
 	},
 	renderField () {
 		console.log('adaadw');

@@ -3,7 +3,7 @@ var FieldType = require('../Type');
 var TextType = require('../text/TextType');
 var util = require('util');
 var utils = require('keystone-utils');
-
+var Vimeojs = require('vimeo');
 /**
  * Email FieldType Constructor
  * @extends Field
@@ -79,11 +79,11 @@ vimeo.prototype.inputIsValid = function (data, required, item) {
  * Ensures that the email address is lowercase
  */
 
-vimeo.prototype.upload() {
+vimeo.prototype.upload = function() {
 	 var CLIENT_ID = '46326064b76e3b25a60e1bcc22839cbfb754ee99';
 	 var CLIENT_SECRET = '9hXDHqIcBe1/Yj4jE+MR4OBUCKZEsLbneZbzHVU0fTa5rIHs8PQ4sWYVCtaoc9AiWwzcWWm5pgSyuc0attWvw4jNR0sGZBqQEQhgr14efAKq5fj/Jnq1lhpbvK8h6EMb';
 	 var ACCESS_TOKEN = 'https://api.vimeo.com/oauth/access_token';
-	 var lib = new Vimeo(CLIENT_ID, CLIENT_SECRET, ACCESS_TOKEN);
+	 var lib = new Vimeojs(CLIENT_ID, CLIENT_SECRET, ACCESS_TOKEN);
 	 lib.generateClientCredentials(['upload'], function (err, access_token) {
 			if (err) {
 							throw err;
