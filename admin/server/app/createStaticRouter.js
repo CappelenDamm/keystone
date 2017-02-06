@@ -29,6 +29,7 @@ function buildFieldTypesStream (fieldTypes) {
 
 		src += '};\n';
 	});
+	console.log('fieldTypes', src);
 	return str(src);
 }
 

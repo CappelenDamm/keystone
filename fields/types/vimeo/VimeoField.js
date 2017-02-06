@@ -17,33 +17,15 @@ module.exports = Field.create({
 	statics: {
 		type: 'Vimeo',
 	},
-  upload() {
-
-	},
 	renderField () {
-		console.log('adaadw');
-		return (
-			<div><input type="button" value="upload" onClick={this.upload.bind(this)}/>
-			<FormInput
-				name={this.getInputName(this.props.path)}
-				ref="focusTarget"
-				value={this.props.value}
-				onChange={this.valueChanged}
-				autoComplete="off"
-				type="email"
-			/>
-		</div>
-		);
+		let vimeoFile = this.props.values.vimeoFile;
+		if (vimeoFile) {
+			let html = vimeoFile.embed;
+			return <div contentEditable='true' dangerouslySetInnerHTML={{ __html: html }}></div>;
+    }
+		return null;
 	},
 	renderValue () {
-		console.log('HELOASRJ32');
-		return this.props.value ? (
-			<FormInput noedit component="a" href={'mailto:' + this.props.value}>
-				{this.props.value}
-				HELLO WORLD
-			</FormInput>
-		) : (
-			<FormInput noedit />
-		);
+		return null;
 	},
 });
