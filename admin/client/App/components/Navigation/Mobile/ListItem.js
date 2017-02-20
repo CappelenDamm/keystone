@@ -19,8 +19,7 @@ const MobileListItem = React.createClass({
 				className={this.props.className}
 				to={this.props.href}
 				onClick={this.props.onClick}
-				tabIndex="-1"
-			>
+				tabIndex="-1">
 				{this.props.children}
 			</Link>
 		);
