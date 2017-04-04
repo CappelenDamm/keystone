@@ -1,4 +1,4 @@
-![KeystoneJS](http://keystonejs.com/images/logo.svg)
+![KeystoneJS](http://keystonejs.com/images/logo.svg) forked
 ===================================
 
 [![Build Status](https://travis-ci.org/keystonejs/keystone.svg?branch=master)](https://travis-ci.org/keystonejs/keystone)
