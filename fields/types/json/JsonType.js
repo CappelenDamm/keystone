@@ -14,8 +14,9 @@ function json(list, path, options) {
 	this._nativeType = Object;
 	this._defaultSize = 'full';
 	this.height = options.height || 180;
-    this.jsonType = options.jsonType;
-	this._properties = ['editor', 'height', 'jsonType'];
+    this.objectType = options.objectType;
+    this.options = options.options;
+	this._properties = ['editor', 'height', 'objectType', 'options'];
 	this.codemirror = options.codemirror || {};
 	this.editor = _.defaults(this.codemirror, { mode : json });
 	json.super_.call(this, list, path, options);
