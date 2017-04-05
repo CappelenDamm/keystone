@@ -10,6 +10,8 @@ var util = require('util');
  */
 function color (list, path, options) {
 	this._nativeType = String;
+    this.aux = options.aux;
+	this._properties = ['aux'];
 	color.super_.call(this, list, path, options);
 }
 color.properName = 'Color';

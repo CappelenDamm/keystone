@@ -13,7 +13,8 @@ function select (list, path, options) {
 	this.numeric = options.numeric ? true : false;
 	this._nativeType = (options.numeric) ? Number : String;
 	this._underscoreMethods = ['format', 'pluck'];
-	this._properties = ['ops', 'numeric'];
+    this.aux = options.aux;
+	this._properties = ['ops', 'numeric', 'aux'];
 	if (typeof options.options === 'string') {
 		options.options = options.options.split(',');
 	}
