@@ -58,19 +58,19 @@ json.prototype.validateInput = function (data, callback)  {
 	var value = this.getValueFromData(data);
     var result = true;
 	if (value === undefined && item && (item.get(this.path) || item.get(this.path) === 0)) {
-		return true;
+		result = true;
 	}
 
 	try {
 		value = this.getValueFromData(data, true);
 
 		if(typeof value != 'object') {
-			return false;
+			result = false;
 		} else {
-			return true;
+			result = true;
 		}
 	} catch(ex) {
-		return false;
+		result = false;
 	}
 
     utils.defer(callback, result);
