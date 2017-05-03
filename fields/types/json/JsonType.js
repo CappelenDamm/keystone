@@ -45,32 +45,37 @@ json.prototype.getValueFromData = function(data, canThrow) {
 	return value;
 };
 
-
-json.prototype.validateInput = function(data, required, item) {
+text.prototype.validateRequiredInput = function (item, data, callback) {
 	var value = this.getValueFromData(data);
+	var result = !!value;
+	if (value === undefined && item.get(this.path)) {
+		result = true;
+	}
+	utils.defer(callback, result);
+};
 
+json.prototype.validateInput = function (data, callback)  {
+	var value = this.getValueFromData(data);
+    var result = true;
 	if (value === undefined && item && (item.get(this.path) || item.get(this.path) === 0)) {
 		return true;
 	}
+    
+	try {
+		value = this.getValueFromData(data, true);
 
-	if (value == null && required) {
-		return false;
-	} else if(value == null && !required) {
-		return true;
-	} else {
-		try {
-			value = this.getValueFromData(data, true);
-
-			if(typeof value != 'object') {
-				return false;
-			} else {
-				return true;
-			}
-		} catch(ex) {
+		if(typeof value != 'object') {
 			return false;
+		} else {
+			return true;
 		}
+	} catch(ex) {
+		return false;
 	}
+
+    utils.defer(callback, result);
 };
+
 
 /* Export Field Type */
 exports = module.exports = json;
