@@ -45,7 +45,7 @@ json.prototype.getValueFromData = function(data, canThrow) {
 	return value;
 };
 
-text.prototype.validateRequiredInput = function (item, data, callback) {
+json.prototype.validateRequiredInput = function (item, data, callback) {
 	var value = this.getValueFromData(data);
 	var result = !!value;
 	if (value === undefined && item.get(this.path)) {
@@ -60,7 +60,7 @@ json.prototype.validateInput = function (data, callback)  {
 	if (value === undefined && item && (item.get(this.path) || item.get(this.path) === 0)) {
 		return true;
 	}
-    
+
 	try {
 		value = this.getValueFromData(data, true);
 
