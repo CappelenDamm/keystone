@@ -32,23 +32,29 @@ module.exports = function (req, res) {
 	}
 	var deletedCount = 0;
 	var deletedIds = [];
+    var errors = [];
 	req.list.model.find().where('_id').in(ids).exec(function (err, results) {
 		if (err) {
 			console.log('Error deleting ' + req.list.key + ' items:', err);
 			return res.apiError('database error', err);
 		}
+
 		async.forEachLimit(results, 10, function (item, next) {
 			item.remove(function (err) {
-				if (err) return next(err);
+				if (err) {
+                    errors.push(err);
+                    return next(err);
+                }
 				deletedCount++;
 				deletedIds.push(item.id);
 				next();
 			});
 		}, function () {
 			return res.json({
-				success: true,
+				success: errors.length == 0,
 				ids: deletedIds,
 				count: deletedCount,
+                errors: errors
 			});
 		});
 	});
