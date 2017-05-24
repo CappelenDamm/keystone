@@ -50,11 +50,13 @@ module.exports = function (req, res) {
 				next();
 			});
 		}, function () {
+            if (errors.length > 0) {
+	  		    return res.apiError('database error', errors.join(", "));
+			}
 			return res.json({
-				success: errors.length == 0,
+				success: true,
 				ids: deletedIds,
-				count: deletedCount,
-                errors: errors
+				count: deletedCount
 			});
 		});
 	});
