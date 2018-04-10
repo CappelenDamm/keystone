@@ -16,9 +16,7 @@ function json(list, path, options) {
 	this.height = options.height || 180;
     this.objectType = options.objectType;
     this.aux = options.aux;
-	this._properties = ['editor', 'height', 'objectType', 'aux'];
-	this.codemirror = options.codemirror || {};
-	this.editor = _.defaults(this.codemirror, { mode : json });
+	this._properties = ['height', 'objectType', 'aux'];
 	json.super_.call(this, list, path, options);
 }
 util.inherits(json, FieldType);
@@ -55,14 +53,8 @@ json.prototype.validateRequiredInput = function (item, data, callback) {
 };
 
 json.prototype.validateInput = function (data, callback)  {
-	var value = this.getValueFromData(data);
-    var result = true;
-	if (value === undefined && item && (item.get(this.path) || item.get(this.path) === 0)) {
-		result = true;
-	}
-
 	try {
-		value = this.getValueFromData(data, true);
+		let value = this.getValueFromData(data, true);
 
 		if(typeof value != 'object') {
 			result = false;
