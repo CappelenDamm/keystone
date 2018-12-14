@@ -50,6 +50,7 @@ function Field (list, path, options) {
 	this.type = this.constructor.name;
 	this.options = _.defaults({}, options, this.defaults);
 	this.label = options.label || utils.keyToLabel(this.path);
+	this.aux = options.aux;
 	this.typeDescription = options.typeDescription || this.typeDescription || this.type;
 
 	this.list.automap(this);
