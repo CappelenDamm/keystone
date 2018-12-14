@@ -119,6 +119,7 @@ Field.prototype.getOptions = function () {
 		}
 		this.__options.hasFilterMethod = this.addFilterToQuery ? true : false;
 		this.__options.defaultValue = this.getDefaultValue();
+		if(this.aux) this.__options.aux = this.aux;
 	}
 	return this.__options;
 };
