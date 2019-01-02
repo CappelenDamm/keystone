@@ -49,10 +49,8 @@ module.exports = function (req, res) {
 				deletedIds.push(item.id);
 				next();
 			});
-		}, function () {
-            if (errors.length > 0) {
-	  		    return res.apiError('database error', errors.join(", "));
-			}
+		}, function (err) {
+			if (err) return res.apiError(err);
 			return res.json({
 				success: true,
 				ids: deletedIds,
