@@ -40,6 +40,7 @@ module.exports = function (req, res) {
 		}
 
 		async.forEachLimit(results, 10, function (item, next) {
+			item._req_user = req.user;
 			item.remove(function (err) {
 				if (err) {
                     errors.push(err.message);
