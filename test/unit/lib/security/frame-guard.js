@@ -3,11 +3,12 @@ var demand = require('must');
 var request = require('supertest');
 var demand = require('must');
 var getExpressApp = require('../../../helpers/getExpressApp');
-var app = getExpressApp();
 var frameGuard = require('../../../../lib/security/frameGuard');
 
 describe('Keystone "frame guard" setting', function () {
-	before(function () {
+	var app;
+	before(async function () {
+		app = await getExpressApp();
 		app.use(frameGuard(keystone));
 		app.get('/', function (req, res) {
 			res.send('OK');

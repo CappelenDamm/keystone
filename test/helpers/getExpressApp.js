@@ -1,13 +1,12 @@
 var keystone = require('../../index.js');
-var mongoose = require('./getMongooseConnection.js');
+var mongooseConnection = require('./getMongooseConnection.js');
 var methodOverride = require('method-override');
 var bodyParser = require('body-parser');
 
-function getExpressApp() {
+async function getExpressApp() {
 	var app;
-
 	keystone.init({
-		'mongoose': mongoose
+		'mongoose': await mongooseConnection
 	});
 	app = keystone.express();
 

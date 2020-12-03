@@ -12,9 +12,9 @@ Specify the related Model using the `ref` option. For a many-many relationship, 
 ```js
 
 // var mongoose = require('mongoose');
-// var keystone = require('keystone');
+var keystone = require('keystone');
 
-var keystone = require('./index');
+// var keystone = require('./index');
 var Types = keystone.Field.Types;
 
 
@@ -52,26 +52,27 @@ Parent.register();
 
 
 async function test(){
+	var parent = new Parent.model();
+	var child = new Child.model({valueA: "X", valueB: "Y"});
+	parent.child = child;
+
+
+	var childA = new Child.model({valueA: "A", valueB: "A"});
+	var childB = new Child.model({valueA: "B", valueB: "B"});
+	parent.children = [childA, childB];
+
+	await parent.validate();
+
+	parent.child.valueA = null;
+
+	try {
+		await parent.validate();
+	} catch(err){
+		console.error()
+	}
 
 }
 
-var parent = new Parent.model();
-var child = new Child.model({valueA: "X", valueB: "Y"});
-parent.child = child;
-
-
-var childA = new Child.model({valueA: "A", valueB: "A"});
-var childB = new Child.model({valueA: "B", valueB: "B"});
-parent.children = [childA, childB];
-
-parent.validate();
-
-parent.child.valueA = null;
-
-
-parent.validate()
-	.then(x => console.log("success", x))
-	.catch(y => console.error("error", y))
 
 ```
 

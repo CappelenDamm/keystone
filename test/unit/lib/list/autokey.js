@@ -2,13 +2,19 @@ var keystone = require('../../../../index.js');
 var demand = require('must');
 var utils = require('keystone-utils');
 
-keystone.mongoose = require('../../../helpers/getMongooseConnection.js');
+var mongooseConnection = require('../../../helpers/getMongooseConnection.js');
 
 keystone.import('../models');
 
-var Post = keystone.list('Post');
-
 describe('Test autokey', function () {
+	var Post;
+	before(async () => {
+		keystone.init({
+			'mongoose': await mongooseConnection
+		});
+
+		Post = keystone.list('Post');
+	})
 
 	it('generate an autokey value from another field', function (done) {
 		var post = new Post.model({

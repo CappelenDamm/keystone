@@ -5,8 +5,8 @@ var getExpressApp = require('../helpers/getExpressApp');
 
 describe('Keystone "module root" setting', function () {
 
-	before(function () {
-		getExpressApp();
+	before(async function () {
+		await getExpressApp();
 	});
 
 	describe('default', function () {

@@ -7,7 +7,7 @@ var getExpressApp = require('../helpers/getExpressApp');
 var removeModel = require('../helpers/removeModel');
 
 describe('List "track" option', function () {
-	var app = getExpressApp();
+	var app;
 	var userModelName = 'User';
 	var testModelName = 'Test';
 	var User;
@@ -16,7 +16,8 @@ describe('List "track" option', function () {
 	var dummyUser2;
 	var post;
 
-	before(function (done) {
+	before(async function () {
+		app = await getExpressApp();
 		var tasks = [];
 
 		// in case model names were previously used and not cleaned up
@@ -114,12 +115,15 @@ describe('List "track" option', function () {
 			});
 		});
 
-		async.series(tasks, function (err) {
-			if (err) {
-				throw err;
-			}
-			done();
-		});
+		await new Promise((resolve, reject) => {
+			async.series(tasks, function (err) {
+				if (err) {
+					reject(err);
+					throw err;
+				}
+				resolve();
+			});
+		})
 	});
 
 	describe('when "track" option is not valid', function () {

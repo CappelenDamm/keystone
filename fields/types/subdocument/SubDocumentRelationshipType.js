@@ -106,14 +106,20 @@ subDocumentRelationship.prototype.getData = function (item) {
 subDocumentRelationship.prototype.addFilterToQuery = function (filter) {
 	var query = {};
 	if (!Array.isArray(filter.value)) {
-		if (typeof filter.value === 'string' && filter.value) {
-			filter.value = [filter.value];
+		if (filter.value) {
+			if(typeof filter.value === "string"){
+				filter.value = [filter.value];
+			} else if(filter.value._id) {
+				filter.value = [filter.value._id];
+			} else {
+				filter.value = [String(filter.value)];
+			}
 		} else {
 			filter.value = [];
 		}
 	}
 	if (filter.value.length) {
-		query[this.path] = (filter.inverted) ? { $nin: filter.value } : { $in: filter.value };
+		query[`${this.path}\._id`] = (filter.inverted) ? { $nin: filter.value } : { $in: filter.value }
 	} else {
 		if (this.many) {
 			query[this.path] = (filter.inverted) ? { $not: { $size: 0 } } : { $size: 0 };
@@ -128,9 +134,7 @@ subDocumentRelationship.prototype.addFilterToQuery = function (filter) {
  * Formats the field value
  */
 subDocumentRelationship.prototype.format = function (item) {
-	var value = item.get(this.path);
-	// force the formatted value to be a string - unexpected things happen with ObjectIds.
-	return this.many ? value.map(value => JSON.stringify(value)).join(', ') : (value || '') + '';
+	return item.get(this.path);
 };
 
 /**
@@ -140,10 +144,11 @@ subDocumentRelationship.prototype.format = function (item) {
  * TODO: we're just testing for strings here, so actual MongoID Objects (from
  * mongoose) would fail validation. not sure if this is an issue.
  */
-function validateValue(value){
-	return typeof value === "object" && value.__t;
-}
 subDocumentRelationship.prototype.validateInput = function (data, callback) {
+	const validateValue = (value) => {
+		// NOTE: Does not recursively validate input
+		return value && typeof value === "object" && Boolean(value._id)
+	}
 	var value = this.getValueFromData(data);
 	var result = false;
 	if (value === undefined || value === null || value === '') {
@@ -167,6 +172,10 @@ subDocumentRelationship.prototype.validateInput = function (data, callback) {
  * Asynchronously confirms that the provided value is present
  */
 subDocumentRelationship.prototype.validateRequiredInput = function (item, data, callback) {
+	const validateValue = (value) => {
+		// NOTE: Does not recursively validate input
+		return value && typeof value === "object" && Boolean(value._id)
+	}
 	var value = this.getValueFromData(data);
 	var result = false;
 	if (value === undefined) {
@@ -226,6 +235,7 @@ subDocumentRelationship.prototype.updateItem = function (item, data, callback) {
 
 	// Are we handling a many relationship or just one value?
 	if (this.many) {
+		let _new = value;
 		if(!Array.isArray(value)){
 			_new = [value];
 		}
