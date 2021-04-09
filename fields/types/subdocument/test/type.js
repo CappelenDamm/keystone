@@ -1,12 +1,65 @@
 var demand = require('must');
 var SubDocumentRelationshipType = require('../SubDocumentRelationshipType');
+const keystone = require('../../../../index.js');
+
+var DiscriminatorParentType;
+var DiscriminatorChildTypeA; 
+var DiscriminatorChildTypeB;
 
 exports.initList = function (List) {
+
+	DiscriminatorParentType  = new keystone.List('DiscriminatorParentType', {
+		hidden: true,
+		nocreate: true,
+		schema: {
+			collection: `test_parent_type`,
+		},
+	});
+	DiscriminatorParentType.add(
+		{
+			regularField: {type: String, defaultValue: "regularFieldValue"}
+		}
+	);
+	DiscriminatorParentType.register();
+	DiscriminatorChildTypeA  = new keystone.List('DiscriminatorChildTypeA', {
+		hidden: true,
+		inherits: DiscriminatorParentType
+	});
+	DiscriminatorChildTypeA.add(
+		{
+			fieldA: {type: String, defaultValue: "A"}
+		}
+	);
+	DiscriminatorChildTypeA.register();
+
+	DiscriminatorChildTypeB  = new keystone.List('DiscriminatorChildTypeB', {
+		hidden: true,
+		inherits: DiscriminatorParentType
+	});
+	DiscriminatorChildTypeB.add(
+		{
+			fieldB: {type: String, defaultValue: "B"}
+		}
+	);
+	DiscriminatorChildTypeB.register();
+
+
+
 	// We can use relationships that refer to the same List to test
 	List.add({
 		single: { type: SubDocumentRelationshipType, ref: List.key, refSchema: List.schema },
 		many: { type: SubDocumentRelationshipType, ref: List.key, refSchema: List.schema, many: true },
-		value: { type: String, required: true, default: "initial"}
+		value: { type: String, required: true, default: "initial"},
+		withDiscriminator: {
+			type: SubDocumentRelationshipType,
+			ref: "DiscriminatorParentType",
+			refSchema: DiscriminatorParentType.schema,
+		},
+		withDiscriminatorTypeA: {
+			type: SubDocumentRelationshipType,
+			ref: "DiscriminatorChildTypeA",
+			refSchema: DiscriminatorChildTypeA.schema,
+		}
 	});
 };
 
@@ -17,9 +70,18 @@ exports.testFieldType = function (List) {
 	var childItem = new List.model();
 	var childItemWithoutValue = new List.model();
 	childItemWithoutValue.value = null;
-	before(function (done) {
-		done()
-	});
+
+	var discriminatorValueA = new DiscriminatorChildTypeA.model({
+		regularField: "Regular A",
+		fieldA: "Field A",
+		fieldB: "Shouldn't exist"
+	})
+
+	var discriminatorValueB = new DiscriminatorChildTypeB.model({
+		regularField: "Regular B",
+		fieldA: "Shouldn't exist",
+		fieldB: "Field B",
+	})
 
 
 	describe('single', function () {
@@ -210,12 +272,16 @@ exports.testFieldType = function (List) {
 
 		it('should not save the provided value with an item id', function (done) {
 			var testItem = new List.model();
-			List.fields.single.updateItem(testItem, { single: childItem.id }, function () {
+			List.fields.single.updateItem(testItem, { single: childItem.id }, async function () {
 				testItem.save().then(() => {
 					demand("promise resolved").equal("promise rejected")
 				}).catch(err => {
-					demand("promise resolved").equal("promise rejected")
-				}).finally(done);
+					if(err.toString().match(/ValidationError: single: Cast to Embedded failed for value "\w+" at path "single"/)){
+						done();
+					} else {
+						done(err);
+					}
+				});
 			});
 		});
 
@@ -288,6 +354,42 @@ exports.testFieldType = function (List) {
 					} catch (err) { done(err) }
 				});
 			});
+		});
+		it('should be able to store discriminated models in parent type', function (done) {
+			var testItem = new List.model({
+				withDiscriminator: discriminatorValueA,
+			});
+			testItem.save(function (err) {
+				List.model.find({_id: testItem._id}, function (err, persistedData) {
+					try {
+						demand(testItem.withDiscriminator.fieldA).not.be.undefined();
+						demand(testItem.withDiscriminator.fieldB).be.undefined();
+						done();
+					} catch (err) { done(err) }
+				});
+			});
+		});
+		it('should be able to store discriminated models in discriminated type', function (done) {
+			var testItem = new List.model({
+				withDiscriminatorTypeA: discriminatorValueA,
+			});
+			testItem.save(function (err) {
+				List.model.find({_id: testItem._id}, function (err, persistedData) {
+					try {
+						demand(testItem.withDiscriminatorTypeA.fieldA).not.be.undefined();
+						demand(testItem.withDiscriminatorTypeA.fieldB).be.undefined();
+						done();
+					} catch (err) { done(err) }
+				});
+			});
+		});
+		it('should not be able to store wrong discriminated models in discriminated type', function (done) {
+			var testItem = new List.model({
+				withDiscriminatorTypeA: discriminatorValueB,
+			});
+			testItem.validate().then(x => {
+				done("Discriminator type B should not be placeable in discriminator type A fields")
+			}).catch(() => done());
 		});
 	});
 
@@ -489,4 +591,5 @@ exports.testFieldType = function (List) {
 			});
 		});
 	});
+
 };

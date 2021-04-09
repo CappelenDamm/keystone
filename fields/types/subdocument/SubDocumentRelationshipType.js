@@ -82,6 +82,10 @@ subDocumentRelationship.prototype.addToSchema = function (schema) {
 		refList: this.options.refListPath || this.path + 'RefList',
 	};
 	schema.path(this.path, this.many ? [def] : def);
+	for(let discriminatorKey in this._nativeType.discriminators){
+		let discriminatorSchema = this._nativeType.discriminators[discriminatorKey];
+		schema.path(this.path).discriminator(discriminatorKey, discriminatorSchema)
+	}
 	schema.virtual(this.paths.refList).get(function () {
 		return keystone.list(field.options.ref);
 	});
