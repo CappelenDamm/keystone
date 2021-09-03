@@ -114,7 +114,7 @@ app.get('/add-event', routes.views.addEvent)
 ... so `/routes/index.js` should now contain:
 
 ```javascript
-exports = module.exports = function (app) {
+module.exports = function (app) {
   app.get('/', routes.views.index)
   app.get('/add-event', routes.views.addEvent)
 };

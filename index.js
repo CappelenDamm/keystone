@@ -133,6 +133,24 @@ Keystone.prototype.routes = function () {
 };
 
 
+/* Only necessary when importing models using `keystone.import('models');` as the order can't be ensured. */
+Keystone.prototype.applyDiscriminatorKeys = function () {
+	for (let key in this.lists) {
+		if ({}.hasOwnProperty.call(this.lists, key)) {
+			let list = this.lists[key];
+			if (!list.fieldTypes.subDocumentRelationship) {
+				continue;
+			}
+			for (let field of list.fieldsArray) {
+				if (field.type === 'subDocumentRelationship') {
+					field.applyDiscriminatorKeysToSchema(list.schema);
+				}
+			}
+		}
+	}
+}
+
+
 /**
  * The exports object is an instance of Keystone.
  */

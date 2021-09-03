@@ -48,4 +48,4 @@ json.prototype.validateInput = function (data, callback)  {
 
 
 /* Export Field Type */
-exports = module.exports = json;
+module.exports = json;

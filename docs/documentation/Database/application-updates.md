@@ -23,7 +23,7 @@ Creates a new admin User
 var keystone = require('keystone');
 var User = keystone.list('User');
 
-exports = module.exports = function(done) {
+module.exports = function(done) {
   new User.model({
     name: { first: 'Admin', last: 'User' },
     password: 'admin',

@@ -191,7 +191,7 @@ var routes = {
 };
 
 // Bind Routes
-exports = module.exports = function(app) {
+module.exports = function(app) {
 
   app.get('/', routes.views.index);
 
@@ -436,7 +436,7 @@ Update script to add the first admin (change to your own name, email and passwor
 var keystone = require('keystone');
 var User = keystone.list('User');
 
-exports = module.exports = function(done) {
+module.exports = function(done) {
   new User.model({
     name: { first: 'Admin', last: 'User' },
     email: 'admin@keystonejs.com',

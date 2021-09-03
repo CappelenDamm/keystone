@@ -18,7 +18,7 @@ function subDocumentRelationship (list, path, options) {
 	this.refSchema = options.refSchema;
 	this._nativeType = options.refSchema;
 	this._underscoreMethods = ['format', 'getExpandedData'];
-    this.aux = options.aux;
+	this.aux = options.aux;
 	this._properties = ['isValid', 'many', 'filters', 'createInline', 'aux'];
 	subDocumentRelationship.super_.call(this, list, path, options);
 }
@@ -82,14 +82,28 @@ subDocumentRelationship.prototype.addToSchema = function (schema) {
 		refList: this.options.refListPath || this.path + 'RefList',
 	};
 	schema.path(this.path, this.many ? [def] : def);
-	for(let discriminatorKey in this._nativeType.discriminators){
-		let discriminatorSchema = this._nativeType.discriminators[discriminatorKey];
-		schema.path(this.path).discriminator(discriminatorKey, discriminatorSchema)
-	}
+	this.applyDiscriminatorKeysToSchema(schema);
 	schema.virtual(this.paths.refList).get(function () {
 		return keystone.list(field.options.ref);
 	});
 	this.bindUnderscoreMethods();
+};
+
+
+/**
+ * Ensures proper discrimination handling
+ */
+subDocumentRelationship.prototype.applyDiscriminatorKeysToSchema = function (schema) {
+	for (let discriminatorKey in this._nativeType.discriminators) {
+		if ({}.hasOwnProperty.call(this._nativeType.discriminators, discriminatorKey)) {
+			let discriminatorSchema = this._nativeType.discriminators[discriminatorKey];
+			let schemaPath = schema.path(this.path);
+			if (schemaPath.caster.discriminators && schemaPath.caster.discriminators[discriminatorKey]) {
+				continue;
+			}
+			schemaPath.discriminator(discriminatorKey, discriminatorSchema);
+		}
+	}
 };
 
 /**

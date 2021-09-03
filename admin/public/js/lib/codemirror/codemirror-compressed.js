@@ -51577,7 +51577,7 @@ function assert(expression) {
   // for Closure Compiler "advanced" mode.
   if (typeof exports !== 'undefined') {
     if (typeof module !== 'undefined' && module.exports) {
-      exports = module.exports = _;
+      module.exports = _;
     }
     exports._ = _;
   } else {

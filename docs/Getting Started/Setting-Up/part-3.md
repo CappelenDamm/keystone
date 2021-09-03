@@ -113,7 +113,7 @@ var routes = {
   views: importRoutes('./views'),
 };
 
-exports = module.exports = function (app) {
+module.exports = function (app) {
   app.get('/', routes.views.index)
 };
 ```
