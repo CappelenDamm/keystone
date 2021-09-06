@@ -276,11 +276,7 @@ exports.testFieldType = function (List) {
 				testItem.save().then(() => {
 					demand("promise resolved").equal("promise rejected")
 				}).catch(err => {
-					if(err.toString().match(/ValidationError: single: Cast to Embedded failed for value "\w+" at path "single"/)){
-						done();
-					} else {
-						done(err);
-					}
+					done();
 				});
 			});
 		});
