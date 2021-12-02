@@ -8,16 +8,16 @@ var utils = require('keystone-utils');
  * @extends Field
  * @api public
  */
-function select (list, path, options) {
+function select(list, path, options) {
 	this.ui = options.ui || 'select';
 	this.numeric = options.numeric ? true : false;
-	this._nativeType =  (options.numeric) ? Number : String;
+	this._nativeType = (options.numeric) ? Number : String;
 	if (options.many) {
 		this._nativeType = [this._nativeType];
 	}
 	this._underscoreMethods = ['format', 'pluck'];
 	this.aux = options.aux;
-	this.many= options.many;
+	this.many = options.many;
 	this._properties = ['ops', 'numeric', 'aux', 'many'];
 
 	if (typeof options.options === 'string') {
@@ -27,9 +27,9 @@ function select (list, path, options) {
 		throw new Error('Select fields require an options array.');
 	}
 	this.ops = options.options.map(function (i) {
-		var op = typeof i === 'string' ? { value: i.trim(), label: utils.keyToLabel(i) } : i;
+		var op = typeof i === 'string' ? {value: i.trim(), label: utils.keyToLabel(i)} : i;
 		if (!_.isObject(op)) {
-			op = { label: '' + i, value: '' + i };
+			op = {label: '' + i, value: '' + i};
 		}
 		if (options.numeric && !_.isNumber(op.value)) {
 			op.value = Number(op.value);
@@ -48,6 +48,7 @@ function select (list, path, options) {
 	this.values = _.map(this.ops, 'value');
 	select.super_.call(this, list, path, options);
 }
+
 select.properName = 'Select';
 util.inherits(select, FieldType);
 
@@ -123,11 +124,11 @@ select.prototype.addFilterToQuery = function (filter) {
 		}
 	}
 	if (filter.value.length > 1) {
-		query[this.path] = (filter.inverted) ? { $nin: filter.value } : { $in: filter.value };
+		query[this.path] = (filter.inverted) ? {$nin: filter.value} : {$in: filter.value};
 	} else if (filter.value.length === 1) {
-		query[this.path] = (filter.inverted) ? { $ne: filter.value[0] } : filter.value[0];
+		query[this.path] = (filter.inverted) ? {$ne: filter.value[0]} : filter.value[0];
 	} else {
-		query[this.path] = (filter.inverted) ? { $nin: ['', null] } : { $in: ['', null] };
+		query[this.path] = (filter.inverted) ? {$nin: ['', null]} : {$in: ['', null]};
 	}
 	return query;
 };
@@ -137,15 +138,32 @@ select.prototype.addFilterToQuery = function (filter) {
  */
 select.prototype.validateInput = function (data, callback) {
 	var value = this.getValueFromData(data);
-	if (typeof value === 'string' && this.numeric) {
-		value = utils.number(value);
+
+	var result = false;
+
+	const checkValue = (value) => {
+		if (typeof value === 'string' && this.numeric) {
+			value = utils.number(value);
+		}
+		return (value in this.map);
+	};
+
+	if(value === undefined || value === null || value === '') {
+		result = true
+	} else if (this.many) {
+		if (Array.isArray(value)) {
+			result = value.every(checkValue);
+		}
+	}else {
+		result = checkValue(value);
 	}
-	var result = value === undefined || value === null || value === '' || (value in this.map) ? true : false;
+
 	utils.defer(callback, result);
 };
 
 /**
  * Asynchronously confirms that the provided value is present
+ * Not valid for many = true
  */
 select.prototype.validateRequiredInput = function (item, data, callback) {
 	var value = this.getValueFromData(data);

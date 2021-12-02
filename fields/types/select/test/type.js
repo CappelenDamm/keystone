@@ -11,6 +11,12 @@ exports.initList = function (List) {
 			{ value: 'one', label: 'One', custom: '1' },
 			{ value: 'two', label: 'Two', custom: '2' },
 		] },
+		selectMany: { type: SelectType, many: true, options: [
+				{ value: 'one', label: 'One'},
+				{ value: 'two', label: 'Two'},
+				{ value: 'three', label: 'Three'},
+				{ value: 'four', label: 'Four'},
+			] },
 		numeric: { type: SelectType, numeric: true, options: [
 			{ value: 1, label: 'one' },
 			{ value: 2, label: 'two' },
@@ -38,6 +44,52 @@ exports.testFieldType = function (List) {
 	});
 
 	describe('validateInput', function () {
+
+		it('should validate arrays with single value', function (done) {
+			List.fields.select.validateInput({
+				select: ['one'],
+			}, function (result) {
+				demand(result).be.true();
+				done();
+			});
+		});
+
+		it('should invalidate arrays with multiple values', function (done) {
+			List.fields.select.validateInput({
+				select: ['one','two'],
+			}, function (result) {
+				demand(result).be.false();
+				done();
+			});
+		});
+
+		it('should validate no array on many', function (done) {
+			List.fields.selectMany.validateInput({
+				selectMany: 'one',
+			}, function (result) {
+				demand(result).be.false();
+				done();
+			});
+		});
+
+		it('should validate many', function (done) {
+			List.fields.selectMany.validateInput({
+				selectMany: ['one','two','three'],
+			}, function (result) {
+				demand(result).be.true();
+				done();
+			});
+		});
+
+		it('should validate many and value is one', function (done) {
+			List.fields.selectMany.validateInput({
+				selectMany: ['one','invalid','three'],
+			}, function (result) {
+				demand(result).be.false();
+				done();
+			});
+		});
+
 		it('should validate top level selects', function (done) {
 			List.fields.select.validateInput({
 				select: 'one',
